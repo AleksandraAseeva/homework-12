@@ -3,15 +3,21 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+  <link rel="stylesheet" href="./style.css">
+  <title>NewsAPI</title>
 </head>
 <body>
-  <h1>NewsAPI</h1>
-  <form action="">
-    <input type="text" placeholder="query" id="queryInp"></input>
-    <input type="button" value="Query" id="queryBtn"></input>
-  </form>
-  <div id="news-container"></div>
+  <div class="main">
+    <h1>NewsAPI</h1>
+    <div class="preface">
+      <p><span></span>Найди все новости по ключевому слову</p>
+      <form action="">
+        <input type="text" placeholder=" query" id="queryInp"></input>
+        <input type="button" value="Query" id="queryBtn"></input>
+      </form>
+    </div>
+    <div id="news-container"></div>
+  </div>
   <script src="main.js"></script>
 </body>
 </html>

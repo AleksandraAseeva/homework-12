@@ -37,10 +37,10 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 var _a;
 Object.defineProperty(exports, "__esModule", { value: true });
-// Импортируем необходимые модули 
+// Импортируем необходимые модули
 var axios_1 = require("axios");
-var API_Key = '5b70a37855f745e0bdf6aeba82bc0bbf';
-var BASE_URL = 'https://newsapi.org/v2';
+var API_Key = "5b70a37855f745e0bdf6aeba82bc0bbf";
+var BASE_URL = "https://newsapi.org/v2";
 // выкачивает данные с использованием промиса, возвращает либо интерфейс, либо нал, если не удалось выкачать данные
 function fetchNews(query) {
     return __awaiter(this, void 0, void 0, function () {
@@ -60,60 +60,56 @@ function fetchNews(query) {
                     return [2 /*return*/, response.data];
                 case 2:
                     error_1 = _a.sent();
-                    console.error('Error fetching news:', error_1);
+                    console.error("Error fetching news:", error_1);
                     return [2 /*return*/, null];
                 case 3: return [2 /*return*/];
             }
         });
     });
 }
-// выкачиваем данные с сервера и в консоли их показываем
-function displayNews(query) {
-    return __awaiter(this, void 0, void 0, function () {
-        var newsData, limitedArticles;
-        var _a;
-        return __generator(this, function (_b) {
-            switch (_b.label) {
-                case 0: return [4 /*yield*/, fetchNews(query)];
-                case 1:
-                    newsData = _b.sent();
-                    console.log('\nQuery:', query);
-                    console.log((_a = newsData === null || newsData === void 0 ? void 0 : newsData.articles.length) !== null && _a !== void 0 ? _a : 0, 'articles received\n');
-                    limitedArticles = newsData === null || newsData === void 0 ? void 0 : newsData.articles.slice(0, 5);
-                    if (limitedArticles) {
-                        limitedArticles.forEach(function (article) {
-                            console.log("Title: ".concat(article.title));
-                            console.log("Description: ".concat(article.description));
-                            console.log("URL: ".concat(article.url));
-                            console.log('..................................');
-                        });
-                    }
-                    else {
-                        console.log('No news data available');
-                    }
-                    return [2 /*return*/];
-            }
-        });
-    });
-}
-// displayNews('processor');
 function displayNewsInDOM(query) {
     return __awaiter(this, void 0, void 0, function () {
-        var newsData, newsContainer;
+        var newsData, newsContainer, newArray, articleBtn, article_1, btn, i, countD_1;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0: return [4 /*yield*/, fetchNews(query)];
                 case 1:
                     newsData = _a.sent();
-                    newsContainer = document.getElementById('news-container');
+                    newsContainer = document.getElementById("news-container");
+                    // Новыц массив
+                    if (newsData) {
+                        newArray = newsData.articles.slice(0, 10);
+                    }
                     if (newsData && newsContainer) {
                         // тип переменной articles мы уже прописали в types.ts
+                        //добавили все сатитьи на страницу
                         newsData.articles.forEach(function (article) {
-                            var articleDiv = document.createElement('div');
-                            articleDiv.className = 'article';
-                            articleDiv.innerHTML = "\n            <h2>".concat(article.title, "</h2>\n            <p>").concat(article.description || '', "</p>\n            <a href=\"").concat(article.url, "\" target=\"_blank\"></a>");
+                            var articleDiv = document.createElement("div");
+                            articleDiv.className = "article";
+                            articleDiv.innerHTML = "\n            <h2>".concat(article.title, "</h2>\n            <p>").concat(article.description || "", "</p>\n            <a href=\"").concat(article.url, "\" target=\"_blank\"></a>");
                             newsContainer.appendChild(articleDiv);
                         });
+                        articleBtn = document.createElement("button");
+                        articleBtn.id = "button";
+                        articleBtn.innerText = "Показать еще";
+                        newsContainer.appendChild(articleBtn);
+                        article_1 = document.getElementsByClassName('article');
+                        btn = document.getElementById('button');
+                        for (i = 10; i < article_1.length; i++) {
+                            article_1[i].style.display = "none";
+                        }
+                        countD_1 = 10;
+                        if (btn) {
+                            btn.addEventListener("click", function () {
+                                //добавляем еще 10
+                                countD_1 += 10;
+                                if (countD_1 <= article_1.length) {
+                                    for (var i = 0; i < countD_1; i++) {
+                                        article_1[i].style.display = "block";
+                                    }
+                                }
+                            });
+                        }
                     }
                     return [2 /*return*/];
             }
@@ -121,8 +117,9 @@ function displayNewsInDOM(query) {
     });
 }
 // displayNewsInDOM('processor');
-(_a = document.getElementById('queryBtn')) === null || _a === void 0 ? void 0 : _a.addEventListener('click', function () {
+//клик по кнопке "найти"
+(_a = document.getElementById("queryBtn")) === null || _a === void 0 ? void 0 : _a.addEventListener("click", function () {
     var _a;
-    var query = (_a = document.getElementById('queryInp')) === null || _a === void 0 ? void 0 : _a.value.trim();
+    var query = (_a = document.getElementById("queryInp")) === null || _a === void 0 ? void 0 : _a.value.trim();
     displayNewsInDOM(query);
 });
