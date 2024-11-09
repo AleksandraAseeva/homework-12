@@ -69,25 +69,30 @@ function fetchNews(query) {
 }
 function displayNewsInDOM(query) {
     return __awaiter(this, void 0, void 0, function () {
-        var newsData, newsContainer, newArray, articleBtn, article_1, btn, i, countD_1;
+        var newsData, newsContainer, noNewsFound, articleBtn, article_1, btn, i, countD_1;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0: return [4 /*yield*/, fetchNews(query)];
                 case 1:
                     newsData = _a.sent();
                     newsContainer = document.getElementById("news-container");
-                    // Новыц массив
-                    if (newsData) {
-                        newArray = newsData.articles.slice(0, 10);
+                    console.log(newsData === null || newsData === void 0 ? void 0 : newsData.articles.length);
+                    if ((newsData === null || newsData === void 0 ? void 0 : newsData.articles.length) == 0 && newsContainer) {
+                        noNewsFound = document.createElement("div");
+                        noNewsFound.className = "emptiness";
+                        noNewsFound.innerHTML = "\n          <p>\u041F\u043E \u0437\u0430\u043F\u0440\u043E\u0441\u0443 ".concat(query, " \u043D\u0438\u0447\u0435\u0433\u043E \u043D\u0435 \u043D\u0430\u0439\u0434\u0435\u043D\u043E</p>");
+                        newsContainer.appendChild(noNewsFound);
                     }
                     if (newsData && newsContainer) {
                         // тип переменной articles мы уже прописали в types.ts
-                        //добавили все сатитьи на страницу
+                        //добавили все статьи на страницу, кроме удаленных
                         newsData.articles.forEach(function (article) {
-                            var articleDiv = document.createElement("div");
-                            articleDiv.className = "article";
-                            articleDiv.innerHTML = "\n            <h2>".concat(article.title, "</h2>\n            <p>").concat(article.description || "", "</p>\n            <a href=\"").concat(article.url, "\" target=\"_blank\"></a>");
-                            newsContainer.appendChild(articleDiv);
+                            if (article.title != "[Removed]") {
+                                var articleDiv = document.createElement("div");
+                                articleDiv.className = "article";
+                                articleDiv.innerHTML = "\n              <h2>".concat(article.title, "</h2>\n              <p>").concat(article.description || "", "</p>\n              <a href=\"").concat(article.url, "\" target=\"_blank\">\u0427\u0438\u0442\u0430\u0442\u044C \u0435\u0449\u0435</a>\n              ");
+                                newsContainer.appendChild(articleDiv);
+                            }
                         });
                         articleBtn = document.createElement("button");
                         articleBtn.id = "button";
@@ -95,6 +100,11 @@ function displayNewsInDOM(query) {
                         newsContainer.appendChild(articleBtn);
                         article_1 = document.getElementsByClassName('article');
                         btn = document.getElementById('button');
+                        //скрыть кнопку если новостей меньше 10
+                        if (article_1.length < 10) {
+                            btn.style.display = "none";
+                        }
+                        //если статей больше 10, скрываем остальные
                         for (i = 10; i < article_1.length; i++) {
                             article_1[i].style.display = "none";
                         }
@@ -116,10 +126,31 @@ function displayNewsInDOM(query) {
         });
     });
 }
-// displayNewsInDOM('processor');
 //клик по кнопке "найти"
 (_a = document.getElementById("queryBtn")) === null || _a === void 0 ? void 0 : _a.addEventListener("click", function () {
     var _a;
+    document.getElementById("news-container").innerHTML = '';
     var query = (_a = document.getElementById("queryInp")) === null || _a === void 0 ? void 0 : _a.value.trim();
-    displayNewsInDOM(query);
+    //проверка, что не отправляется пустой запрос
+    if (query) {
+        displayNewsInDOM(query);
+        document.getElementById("queryInp").value = '';
+    }
 });
+//отправка запроса с помощью enter
+//вариант 1
+// document.getElementById("queryBtn")?.addEventListener("keydown", function (e) {
+//   if (e.key !== undefined) {
+//     const query = (document.getElementById("queryInp") as HTMLInputElement)?.value.trim();
+//     displayNewsInDOM(query);
+//     let mess = (document.getElementById("queryInp") as HTMLInputElement)?.value;
+//     mess = '';
+//   }
+// })
+//вариант2
+// document.getElementById("queryBtn")?.addEventListener("keydown", function (e) {
+//   if (e.key === 'Enter') {
+//     const query = (document.getElementById("queryInp") as HTMLInputElement)?.value.trim();
+//     displayNewsInDOM(query);
+//   }
+// })

@@ -31,8 +31,12 @@ span {
     align-items: center;
 }
 
-p {
+.description {
   font-size: 1.5rem;
+}
+
+p {
+  font-size: 1.2rem;
   font-family: "Montserrat Alternates", sans-serif;
   font-weight: 400;
   margin: 0;
@@ -65,9 +69,7 @@ h2 {
 }
 
 /* .article {
-  margin: 5px;
-  width: 100px;
-  height: 100px;
-  background-color: orange;
-  border-radius: 3px;
+  display: flex;
+  flex-direction: row;
 } */
+

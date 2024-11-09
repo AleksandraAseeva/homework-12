@@ -12,7 +12,7 @@ export interface Root {
         name: string
       }
     author: string | null
-    title: string
+    title: string 
     description: string | null
     url: string
     urlToImage: string | null
