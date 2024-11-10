@@ -23,13 +23,12 @@ async function fetchNews(query: string): Promise<Root | null> {
   }
 }
 
-
 async function displayNewsInDOM(query: string) {
   // await чтобы сначала дождаться загрузки данных, а потом их записать в newsData
   const newsData = await fetchNews(query);
   const newsContainer = document.getElementById("news-container");
 
-  console.log(newsData?.articles.length)
+  console.log(newsData?.articles.length);
   if (newsData?.articles.length == 0 && newsContainer) {
     const noNewsFound = document.createElement("div");
     noNewsFound.className = "emptiness";
@@ -47,8 +46,13 @@ async function displayNewsInDOM(query: string) {
         articleDiv.className = "article";
         articleDiv.innerHTML = `
               <h2>${article.title}</h2>
-              <p>${article.description || ""}</p>
-              <a href="${article.url}" target="_blank">Читать еще</a>
+              <p>${article.publishedAt.slice(
+                0,
+                -10
+              )} ${article.publishedAt.slice(11, -4)}</p>
+              <p>${article.description || ""} <a href="${
+          article.url
+        }" target="_blank">Читать еще</a></p>
               `;
         newsContainer.appendChild(articleDiv);
       }
@@ -60,63 +64,60 @@ async function displayNewsInDOM(query: string) {
     articleBtn.innerText = "Показать еще";
     newsContainer.appendChild(articleBtn);
 
-    
-    const article: HTMLCollectionOf<Element> = document.getElementsByClassName('article');
-    const btn: HTMLElement | null = document.getElementById('button');
-     //скрыть кнопку если новостей меньше 10
-     if (article.length < 10) {
+    const article: HTMLCollectionOf<Element> =
+      document.getElementsByClassName("article");
+    const btn: HTMLElement | null = document.getElementById("button");
+    //скрыть кнопку если новостей меньше 10
+    if (article.length < 10) {
       (btn as HTMLElement).style.display = "none";
-     }
+    }
     //если статей больше 10, скрываем остальные
     for (let i: number = 10; i < article.length; i++) {
-        (article[i] as HTMLElement).style.display = "none";
+      (article[i] as HTMLElement).style.display = "none";
     }
 
     //если нажали на кнопку показать еще
     let countD: number = 10;
     if (btn) {
-        btn.addEventListener("click", function (): void {
-            //добавляем еще 10
-            countD += 10;
-            if (countD <= article.length) {
-                for (let i: number = 0; i < countD; i++) {
-                    (article[i] as HTMLElement).style.display = "block";
-                }
-            }
-        });
+      btn.addEventListener("click", function (): void {
+        //добавляем еще 10
+        countD += 10;
+        if (countD <= article.length) {
+          for (let i: number = 0; i < countD; i++) {
+            (article[i] as HTMLElement).style.display = "block";
+          }
+        }
+      });
     }
-
   }
 }
 
 //клик по кнопке "найти"
 document.getElementById("queryBtn")?.addEventListener("click", () => {
-  (document.getElementById("news-container") as HTMLElement).innerHTML = '';
-  const query = (document.getElementById("queryInp") as HTMLInputElement)?.value.trim();
+  //очищаем контейнер с новостями перед новым запросом
+  (document.getElementById("news-container") as HTMLElement).innerHTML = "";
+  const query = (
+    document.getElementById("queryInp") as HTMLInputElement
+  )?.value.trim();
   //проверка, что не отправляется пустой запрос
   if (query) {
     displayNewsInDOM(query);
-    (document.getElementById("queryInp") as HTMLInputElement).value = '';
+    (document.getElementById("queryInp") as HTMLInputElement).value = "";
   }
 });
 
-
 //отправка запроса с помощью enter
+document.getElementById("queryInp")?.addEventListener("keydown", function (e) {
+  if (e.key === "Enter") {
+    (document.getElementById("news-container") as HTMLElement).innerHTML = "";
+    e.preventDefault();
+    const query = (
+      document.getElementById("queryInp") as HTMLInputElement
+    )?.value.trim();
+    if (query) {
+      displayNewsInDOM(query);
+      (document.getElementById("queryInp") as HTMLInputElement).value = "";
+    }
+  }
+});
 
-//вариант 1
-// document.getElementById("queryBtn")?.addEventListener("keydown", function (e) {
-//   if (e.key !== undefined) {
-//     const query = (document.getElementById("queryInp") as HTMLInputElement)?.value.trim();
-//     displayNewsInDOM(query);
-//     let mess = (document.getElementById("queryInp") as HTMLInputElement)?.value;
-//     mess = '';
-//   }
-// })
-
-//вариант2
-// document.getElementById("queryBtn")?.addEventListener("keydown", function (e) {
-//   if (e.key === 'Enter') {
-//     const query = (document.getElementById("queryInp") as HTMLInputElement)?.value.trim();
-//     displayNewsInDOM(query);
-//   }
-// })

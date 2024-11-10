@@ -35,7 +35,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var _a;
+var _a, _b, _c;
 Object.defineProperty(exports, "__esModule", { value: true });
 // Импортируем необходимые модули
 var axios_1 = require("axios");
@@ -90,7 +90,7 @@ function displayNewsInDOM(query) {
                             if (article.title != "[Removed]") {
                                 var articleDiv = document.createElement("div");
                                 articleDiv.className = "article";
-                                articleDiv.innerHTML = "\n              <h2>".concat(article.title, "</h2>\n              <p>").concat(article.description || "", "</p>\n              <a href=\"").concat(article.url, "\" target=\"_blank\">\u0427\u0438\u0442\u0430\u0442\u044C \u0435\u0449\u0435</a>\n              ");
+                                articleDiv.innerHTML = "\n              <h2>".concat(article.title, "</h2>\n              <p>").concat(article.publishedAt.slice(0, -10), " ").concat(article.publishedAt.slice(11, -4), "</p>\n              <p>").concat(article.description || "", " <a href=\"").concat(article.url, "\" target=\"_blank\">\u0427\u0438\u0442\u0430\u0442\u044C \u0435\u0449\u0435</a></p>\n              ");
                                 newsContainer.appendChild(articleDiv);
                             }
                         });
@@ -98,8 +98,8 @@ function displayNewsInDOM(query) {
                         articleBtn.id = "button";
                         articleBtn.innerText = "Показать еще";
                         newsContainer.appendChild(articleBtn);
-                        article_1 = document.getElementsByClassName('article');
-                        btn = document.getElementById('button');
+                        article_1 = document.getElementsByClassName("article");
+                        btn = document.getElementById("button");
                         //скрыть кнопку если новостей меньше 10
                         if (article_1.length < 10) {
                             btn.style.display = "none";
@@ -129,28 +129,208 @@ function displayNewsInDOM(query) {
 //клик по кнопке "найти"
 (_a = document.getElementById("queryBtn")) === null || _a === void 0 ? void 0 : _a.addEventListener("click", function () {
     var _a;
-    document.getElementById("news-container").innerHTML = '';
+    //очищаем контейнер с новостями перед новым запросом
+    document.getElementById("news-container").innerHTML = "";
     var query = (_a = document.getElementById("queryInp")) === null || _a === void 0 ? void 0 : _a.value.trim();
     //проверка, что не отправляется пустой запрос
     if (query) {
         displayNewsInDOM(query);
-        document.getElementById("queryInp").value = '';
+        document.getElementById("queryInp").value = "";
     }
 });
 //отправка запроса с помощью enter
-//вариант 1
-// document.getElementById("queryBtn")?.addEventListener("keydown", function (e) {
-//   if (e.key !== undefined) {
-//     const query = (document.getElementById("queryInp") as HTMLInputElement)?.value.trim();
-//     displayNewsInDOM(query);
-//     let mess = (document.getElementById("queryInp") as HTMLInputElement)?.value;
-//     mess = '';
+(_b = document.getElementById("queryInp")) === null || _b === void 0 ? void 0 : _b.addEventListener("keydown", function (e) {
+    var _a;
+    if (e.key === "Enter") {
+        document.getElementById("news-container").innerHTML = "";
+        e.preventDefault();
+        var query = (_a = document.getElementById("queryInp")) === null || _a === void 0 ? void 0 : _a.value.trim();
+        if (query) {
+            displayNewsInDOM(query);
+            document.getElementById("queryInp").value = "";
+        }
+    }
+});
+// Для категорий
+// выкачивает исочники статей по категории
+function fetchCategories(category) {
+    return __awaiter(this, void 0, void 0, function () {
+        var response, error_2;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    _a.trys.push([0, 2, , 3]);
+                    return [4 /*yield*/, axios_1.default.get("".concat(BASE_URL, "/top-headlines/sources?"), {
+                            params: {
+                                category: category, // строчка которую ищем
+                                apiKey: API_Key, // наш ключ апи
+                            },
+                        })];
+                case 1:
+                    response = _a.sent();
+                    return [2 /*return*/, response.data];
+                case 2:
+                    error_2 = _a.sent();
+                    console.error("Error fetching news:", error_2);
+                    return [2 /*return*/, null];
+                case 3: return [2 /*return*/];
+            }
+        });
+    });
+}
+// async function displayNewsByCategories(category: string) {
+//   //взяли все источники
+//   const newsData = await fetchCategories(category);
+//   // выводим массив источников в консоль
+//   console.log(newsData?.sources)
+//   if (newsData) {
+//     // разобрали каждый источник
+//     newsData.sources.forEach((source) => {
+//       if (source) {
+//         console.log(source.id)
+//         async function fetchNewsByCategories(source.id: string): Promise<Root | null> {
+//           try {
+//             // дальше испотзуем апи аксиос чтобы загрузить эти данные
+//             // используется конструкция приведения типов <Root>, когда мы через аксиос получаем json он автоматически преобразуется в тип Root, который включает в себя тип Артикл
+//             const response = await axios.get<Root>(`${BASE_URL}/top-headlines?`, {
+//               params: {
+//                 sources: source.id, // строчка которую ищем
+//                 apiKey: API_Key, // наш ключ апи
+//               },
+//             });
+//             return response.data;
+//           } catch (error) {
+//             console.error("Error fetching news:", error);
+//             return null;
+//           }
+//         }
+//       }
+//     });
 //   }
-// })
-//вариант2
-// document.getElementById("queryBtn")?.addEventListener("keydown", function (e) {
-//   if (e.key === 'Enter') {
-//     const query = (document.getElementById("queryInp") as HTMLInputElement)?.value.trim();
-//     displayNewsInDOM(query);
-//   }
-// })
+// }
+//берем новости для каждой категории
+function fetchNewsByCategories(sourceId) {
+    return __awaiter(this, void 0, void 0, function () {
+        var response, error_3;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    _a.trys.push([0, 2, , 3]);
+                    return [4 /*yield*/, axios_1.default.get("".concat(BASE_URL, "/top-headlines?"), {
+                            params: {
+                                sources: sourceId, // строчка которую ищем
+                                apiKey: API_Key, // наш ключ апи
+                            },
+                        })];
+                case 1:
+                    response = _a.sent();
+                    return [2 /*return*/, response.data];
+                case 2:
+                    error_3 = _a.sent();
+                    console.error("Error fetching news:", error_3);
+                    return [2 /*return*/, null];
+                case 3: return [2 /*return*/];
+            }
+        });
+    });
+}
+function displayNewsByCategories(category) {
+    return __awaiter(this, void 0, void 0, function () {
+        var newsData;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, fetchCategories(category)];
+                case 1:
+                    newsData = _a.sent();
+                    // выводим массив источников в консоль
+                    console.log('выводим массив источников в консоль');
+                    console.log(newsData === null || newsData === void 0 ? void 0 : newsData.sources);
+                    if (newsData) {
+                        // разобрали каждый источник
+                        newsData === null || newsData === void 0 ? void 0 : newsData.sources.forEach(function (source) {
+                            if (source) {
+                                console.log('разобрали каждый источник');
+                                console.log(source.id);
+                                var Apple = source.id;
+                                // console.log(fetchNewsByCategories(source.id));
+                                // нашли все новости для конкретного источника
+                                // const newsData = fetchNewsByCategories(Apple)
+                                // const newsContainer = document.getElementById("news-container");
+                                console.log('нашли все новости для конкретного источника');
+                                console.log(fetchNewsByCategories(Apple));
+                                // if (newsData?.sourcess.length == 0 && newsContainer) {
+                                //   const noNewsFound = document.createElement("div");
+                                //   noNewsFound.className = "emptiness";
+                                //   noNewsFound.innerHTML = `
+                                //   <p>По запросу ${query} ничего не найдено</p>`;
+                                //   newsContainer.appendChild(noNewsFound);
+                                // }
+                                // if (newsData && newsContainer) {
+                                //   // тип переменной articles мы уже прописали в types.ts
+                                //   //добавили все статьи на страницу, кроме удаленных
+                                //   newsData.articles .forEach((article) => {
+                                //     if (article.title != "[Removed]") {
+                                //       const articleDiv = document.createElement("div");
+                                //       articleDiv.className = "article";
+                                //       articleDiv.innerHTML = `
+                                //       <h2>${article.title}</h2>
+                                //       <p>${article.publishedAt.slice(
+                                //         0,
+                                //         -10
+                                //       )} ${article.publishedAt.slice(11, -4)}</p>
+                                //       <p>${article.description || ""} <a href="${
+                                //         article.url
+                                //       }" target="_blank">Читать еще</a></p>
+                                //       `;
+                                //       newsContainer.appendChild(articleDiv);
+                                //     }
+                                //   });
+                                //   //добавляем кнопку
+                                //   const articleBtn = document.createElement("button");
+                                //   articleBtn.id = "button";
+                                //   articleBtn.innerText = "Показать еще";
+                                //   newsContainer.appendChild(articleBtn);
+                                //   const article: HTMLCollectionOf<Element> =
+                                //     document.getElementsByClassName("article");
+                                //   const btn: HTMLElement | null = document.getElementById("button");
+                                //   //скрыть кнопку если новостей меньше 10
+                                //   if (article.length < 10) {
+                                //     (btn as HTMLElement).style.display = "none";
+                                //   }
+                                //   //если статей больше 10, скрываем остальные
+                                //   for (let i: number = 10; i < article.length; i++) {
+                                //     (article[i] as HTMLElement).style.display = "none";
+                                //   }
+                                //   //если нажали на кнопку показать еще
+                                //   let countD: number = 10;
+                                //   if (btn) {
+                                //     btn.addEventListener("click", function (): void {
+                                //       //добавляем еще 10
+                                //       countD += 10;
+                                //       if (countD <= article.length) {
+                                //         for (let i: number = 0; i < countD; i++) {
+                                //           (article[i] as HTMLElement).style.display = "block";
+                                //         }
+                                //       }
+                                //     });
+                                //   }
+                                // }
+                            }
+                        });
+                    }
+                    return [2 /*return*/];
+            }
+        });
+    });
+}
+//событие клика по категории
+(_c = document.querySelector("ul")) === null || _c === void 0 ? void 0 : _c.addEventListener("click", function (ev) {
+    var li = ev.target.closest("li");
+    if (li) {
+        //взяли значение
+        var categoryValue = li.getAttribute("value") || "";
+        // console.log(categoryValue)
+        //вызываем функцию показа новостей по категориям
+        displayNewsByCategories(categoryValue);
+    }
+});

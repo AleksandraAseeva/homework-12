@@ -7,16 +7,34 @@
   <title>NewsAPI</title>
 </head>
 <body>
-  <div class="main">
-    <h1>NewsAPI</h1>
-    <div class="preface">
-      <p class="description"><span></span>Найди все новости по ключевому слову</p>
-      <form action="">
-        <input type="text" name="field" placeholder=" query" id="queryInp"></input>
-        <input type="button" value="Query" id="queryBtn"></input>
-      </form>
+  <div class="main-container">
+    <div class="leftbar">
+      <div class="category">
+        <ul>
+          <li value="business">business</li>
+          <li value="entertainment">entertainment</li>
+          <li value="general">general</li>
+          <li value="health">health</li>
+          <li value="science">science</li>
+          <li value="sports">sports</li>
+          <li value="technology">technology</li>
+        </ul>
+      </div>
     </div>
-    <div id="news-container"></div>
+    <div class="main">
+      <h1>NewsAPI</h1>
+      <div class="preface">
+        <p class="description"><span></span>Найди все новости по ключевому слову</p>
+        <form action="">
+          <input type="text" name="field" placeholder=" query" id="queryInp"></input>
+          <input type="button" value="Query" id="queryBtn"></input>
+        </form>
+      </div>
+      <div id="news-container"></div>
+    </div>
+    <div class="rightbar">
+      <div class="advertising"></div>
+    </div>
   </div>
   <script src="main.js"></script>
 </body>
