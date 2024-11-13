@@ -10,6 +10,7 @@
   <div class="main-container">
     <div class="leftbar">
       <div class="category">
+        <h3>Category</h3>
         <ul>
           <li value="business">business</li>
           <li value="entertainment">entertainment</li>
@@ -21,19 +22,21 @@
         </ul>
       </div>
     </div>
-    <div class="main">
-      <h1>NewsAPI</h1>
-      <div class="preface">
-        <p class="description"><span></span>Найди все новости по ключевому слову</p>
-        <form action="">
-          <input type="text" name="field" placeholder=" query" id="queryInp"></input>
-          <input type="button" value="Query" id="queryBtn"></input>
-        </form>
+    <!-- <div class="main"> -->
+      <div class="main">
+        <h1>NewsAPI</h1>
+        <div class="preface">
+          <p class="description"><span></span>Найди все новости по ключевому слову</p>
+          <form action="">
+            <input type="text" name="field" placeholder=" query" id="queryInp"></input>
+            <input type="button" value="Query" id="queryBtn"></input>
+          </form>
+        </div>
+        <div id="news-container"></div>
       </div>
-      <div id="news-container"></div>
-    </div>
+    <!-- </div> -->
     <div class="rightbar">
-      <div class="advertising"></div>
+      <div class="top-news"></div>
     </div>
   </div>
   <script src="main.js"></script>
