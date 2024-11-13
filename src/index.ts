@@ -8,7 +8,6 @@ const BASE_URL = "https://newsapi.org/v2";
 // выкачивает данные с использованием промиса, возвращает либо интерфейс, либо нал, если не удалось выкачать данные
 async function fetchNews(query: string): Promise<Root | null> {
   try {
-    // дальше испотзуем апи аксиос чтобы загрузить эти данные
     // используется конструкция приведения типов <Root>, когда мы через аксиос получаем json он автоматически преобразуется в тип Root, который включает в себя тип Артикл
     const response = await axios.get<Root>(`${BASE_URL}/everything`, {
       params: {
@@ -28,17 +27,15 @@ async function displayNewsInDOM(query: string) {
   const newsData = await fetchNews(query);
   const newsContainer = document.getElementById("news-container");
 
-  console.log(newsData?.articles.length);
   if (newsData?.articles.length == 0 && newsContainer) {
     const noNewsFound = document.createElement("div");
     noNewsFound.className = "emptiness";
     noNewsFound.innerHTML = `
-          <p>По запросу ${query} ничего не найдено</p>`;
+          <p>По запросу «${query}» ничего не найдено</p>`;
     newsContainer.appendChild(noNewsFound);
   }
 
   if (newsData && newsContainer) {
-    // тип переменной articles мы уже прописали в types.ts
     //добавили все статьи на страницу, кроме удаленных
     newsData.articles.forEach((article) => {
       if (article.title != "[Removed]") {
@@ -52,7 +49,7 @@ async function displayNewsInDOM(query: string) {
               )} ${article.publishedAt.slice(11, -4)}</p>
               <p>${article.description || ""} <a href="${
           article.url
-        }" target="_blank">Читать еще</a></p>
+        }" target="_blank">Читать далее</a></p>
               `;
         newsContainer.appendChild(articleDiv);
       }
@@ -61,7 +58,7 @@ async function displayNewsInDOM(query: string) {
     //добавляем кнопку
     const articleBtn = document.createElement("button");
     articleBtn.id = "button";
-    articleBtn.innerText = "Показать еще";
+    articleBtn.innerText = "Показать ещё";
     newsContainer.appendChild(articleBtn);
 
     const article: HTMLCollectionOf<Element> =
@@ -85,6 +82,12 @@ async function displayNewsInDOM(query: string) {
         if (countD <= article.length) {
           for (let i: number = 0; i < countD; i++) {
             (article[i] as HTMLElement).style.display = "block";
+            (btn as HTMLElement).style.display = "none";
+          }
+        } else { //если статьи еще есть, но их меньше 10
+          for (let i: number = 10; i < article.length; i++) {
+            (article[i] as HTMLElement).style.display = "block";
+            (btn as HTMLElement).style.display = "none";
           }
         }
       });
@@ -121,22 +124,16 @@ document.getElementById("queryInp")?.addEventListener("keydown", function (e) {
   }
 });
 
-//можно сделать боковую панель и добавить туда все новостные сайты(свернуть большую часть и добавить поиск), при клике на новостной сайт показать популярные новости данного сайта через апи-ссылку, добавляя соурс:новостной-сайт
-//правую боковую панель (горячие новости) можно сделать через ссылку: популярное+все, добавить картинки, сделать новости маленькими
+//панель с категориями
 
-//попытка2 сделать панель с категориями
-
-// выкачивает статьи по категории
 async function fetchCategories(categoryV: string): Promise<Root | null> {
   try {
-    // дальше используем апи аксиос чтобы загрузить эти данные
-    // используется конструкция приведения типов <Root>, когда мы через аксиос получаем json он автоматически преобразуется в тип Root, который включает в себя тип Артикл
     const response = await axios.get<Root>(
       `${BASE_URL}/top-headlines`,
       {
         params: {
-          category: categoryV, // строчка которую ищем
-          apiKey: API_Key, // наш ключ апи
+          category: categoryV,
+          apiKey: API_Key,
         },
       }
     );
@@ -146,91 +143,80 @@ async function fetchCategories(categoryV: string): Promise<Root | null> {
     return null;
   }
 }
+
  // показываем новости по категории
-//  async function displayNewsByCategories(category: string): Promise<void> {
-//   // взяли все источники категории
-//   const newsData = await fetchCategories(category);
-//   // выводим массив источников в консоль
-//   // console.log(newsData?.sources);
+ async function displayNewsByCategories(category: string): Promise<void> {
+  // взяли все источники категории
+  const newsData = await fetchCategories(category);
+  const newsContainer = document.getElementById("news-container");
 
-//   const newsContainer = document.getElementById("news-container");
+  if (newsData && newsContainer) {
+    newsData.articles.forEach((article) => {
+      if (article.title != "[Removed]") {
+        const articleDiv = document.createElement("div");
+        articleDiv.className = "article";
+        articleDiv.innerHTML = `
+              <h2>${article.title}</h2>
+              <p>${article.publishedAt.slice(
+                0,
+                -10
+              )} ${article.publishedAt.slice(11, -4)}</p>
+              <p>${article.description || ""} <a href="${
+          article.url
+        }" target="_blank">Читать еще</a></p>
+              `;
+        newsContainer.appendChild(articleDiv);
+      }
+    });
 
-//   // console.log(newsData?.articles.length);
-//   // if (newsData?.articles.length == 0 && newsContainer) {
-//   //   const noNewsFound = document.createElement("div");
-//   //   noNewsFound.className = "emptiness";
-//   //   noNewsFound.innerHTML = `
-//   //         <p>По запросу ${query} ничего не найдено</p>`;
-//   //   newsContainer.appendChild(noNewsFound);
-//   // }
+    //добавляем кнопку
+    const articleBtn = document.createElement("button");
+    articleBtn.id = "button";
+    articleBtn.innerText = "Показать еще";
+    newsContainer.appendChild(articleBtn);
 
-//   if (newsData && newsContainer) {
-//     // тип переменной articles мы уже прописали в types.ts
-//     //добавили все статьи на страницу, кроме удаленных
-//     newsData.articles.forEach((article) => {
-//       if (article.title != "[Removed]") {
-//         const articleDiv = document.createElement("div");
-//         articleDiv.className = "article";
-//         articleDiv.innerHTML = `
-//               <h2>${article.title}</h2>
-//               <p>${article.publishedAt.slice(
-//                 0,
-//                 -10
-//               )} ${article.publishedAt.slice(11, -4)}</p>
-//               <p>${article.description || ""} <a href="${
-//           article.url
-//         }" target="_blank">Читать еще</a></p>
-//               `;
-//         newsContainer.appendChild(articleDiv);
-//       }
-//     });
+    const article: HTMLCollectionOf<Element> = document.getElementsByClassName("article");
+    const btn: HTMLElement | null = document.getElementById("button");
+    console.log(article.length);
+    //скрыть кнопку если новостей меньше 10
+    if (article.length < 10) {
+      (btn as HTMLElement).style.display = "none";
+    }
+    //если статей больше 10, скрываем остальные
+    for (let i: number = 10; i < article.length; i++) {
+      (article[i] as HTMLElement).style.display = "none";
+    }
 
-//     //добавляем кнопку
-//     const articleBtn = document.createElement("button");
-//     articleBtn.id = "button";
-//     articleBtn.innerText = "Показать еще";
-//     newsContainer.appendChild(articleBtn);
+    //если нажали на кнопку показать еще
+    let countD: number = 10;
+    if (btn) {
+      btn.addEventListener("click", function (): void {
+        //добавляем еще 10
+        countD += 10;
+        if (countD <= article.length) {
+          for (let i: number = 0; i < countD; i++) {
+            (article[i] as HTMLElement).style.display = "block";
+            (btn as HTMLElement).style.display = "none";
+          }
+        } else { //если статьи еще есть, но их меньше 10
+          for (let i: number = 10; i < article.length; i++) {
+            (article[i] as HTMLElement).style.display = "block";
+            (btn as HTMLElement).style.display = "none";
+          }
+        }
+      });
+    }
+  } 
+}
 
-//     const article: HTMLCollectionOf<Element> =
-//       document.getElementsByClassName("article");
-//     const btn: HTMLElement | null = document.getElementById("button");
-//     //скрыть кнопку если новостей меньше 10
-//     if (article.length < 10) {
-//       (btn as HTMLElement).style.display = "none";
-//     }
-//     //если статей больше 10, скрываем остальные
-//     for (let i: number = 10; i < article.length; i++) {
-//       (article[i] as HTMLElement).style.display = "none";
-//     }
-
-//     //если нажали на кнопку показать еще
-//     let countD: number = 10;
-//     if (btn) {
-//       btn.addEventListener("click", function (): void {
-//         //добавляем еще 10
-//         countD += 10;
-//         if (countD <= article.length) {
-//           for (let i: number = 0; i < countD; i++) {
-//             (article[i] as HTMLElement).style.display = "block";
-//           }
-//         }
-//       });
-//     }
-//   }
- 
-// }
 //событие клика по категории (по тегу li)
 document.querySelector("ul")?.addEventListener("click", (ev: MouseEvent) => {
   const li = (ev.target as HTMLElement).closest("li");
   if (li) {
     //взяли значение
     const categoryValue = li.getAttribute("value") || "";
-    // console.log(categoryValue)
     //вызываем функцию показа новостей по категориям
     (document.getElementById("news-container") as HTMLElement).innerHTML = "";
-    displayNewsInDOM(categoryValue);
+    displayNewsByCategories(categoryValue);
   }
 });
-
-
-//последняя задача: сделать справа блок с горячими новостями

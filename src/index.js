@@ -69,53 +69,58 @@ function fetchNews(query) {
 }
 function displayNewsInDOM(query) {
     return __awaiter(this, void 0, void 0, function () {
-        var newsData, newsContainer, noNewsFound, articleBtn, article_1, btn, i, countD_1;
+        var newsData, newsContainer, noNewsFound, articleBtn, article_1, btn_1, i, countD_1;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0: return [4 /*yield*/, fetchNews(query)];
                 case 1:
                     newsData = _a.sent();
                     newsContainer = document.getElementById("news-container");
-                    console.log(newsData === null || newsData === void 0 ? void 0 : newsData.articles.length);
                     if ((newsData === null || newsData === void 0 ? void 0 : newsData.articles.length) == 0 && newsContainer) {
                         noNewsFound = document.createElement("div");
                         noNewsFound.className = "emptiness";
-                        noNewsFound.innerHTML = "\n          <p>\u041F\u043E \u0437\u0430\u043F\u0440\u043E\u0441\u0443 ".concat(query, " \u043D\u0438\u0447\u0435\u0433\u043E \u043D\u0435 \u043D\u0430\u0439\u0434\u0435\u043D\u043E</p>");
+                        noNewsFound.innerHTML = "\n          <p>\u041F\u043E \u0437\u0430\u043F\u0440\u043E\u0441\u0443 \u00AB".concat(query, "\u00BB \u043D\u0438\u0447\u0435\u0433\u043E \u043D\u0435 \u043D\u0430\u0439\u0434\u0435\u043D\u043E</p>");
                         newsContainer.appendChild(noNewsFound);
                     }
                     if (newsData && newsContainer) {
-                        // тип переменной articles мы уже прописали в types.ts
                         //добавили все статьи на страницу, кроме удаленных
                         newsData.articles.forEach(function (article) {
                             if (article.title != "[Removed]") {
                                 var articleDiv = document.createElement("div");
                                 articleDiv.className = "article";
-                                articleDiv.innerHTML = "\n              <h2>".concat(article.title, "</h2>\n              <p>").concat(article.publishedAt.slice(0, -10), " ").concat(article.publishedAt.slice(11, -4), "</p>\n              <p>").concat(article.description || "", " <a href=\"").concat(article.url, "\" target=\"_blank\">\u0427\u0438\u0442\u0430\u0442\u044C \u0435\u0449\u0435</a></p>\n              ");
+                                articleDiv.innerHTML = "\n              <h2>".concat(article.title, "</h2>\n              <p>").concat(article.publishedAt.slice(0, -10), " ").concat(article.publishedAt.slice(11, -4), "</p>\n              <p>").concat(article.description || "", " <a href=\"").concat(article.url, "\" target=\"_blank\">\u0427\u0438\u0442\u0430\u0442\u044C \u0434\u0430\u043B\u0435\u0435</a></p>\n              ");
                                 newsContainer.appendChild(articleDiv);
                             }
                         });
                         articleBtn = document.createElement("button");
                         articleBtn.id = "button";
-                        articleBtn.innerText = "Показать еще";
+                        articleBtn.innerText = "Показать ещё";
                         newsContainer.appendChild(articleBtn);
                         article_1 = document.getElementsByClassName("article");
-                        btn = document.getElementById("button");
+                        btn_1 = document.getElementById("button");
                         //скрыть кнопку если новостей меньше 10
                         if (article_1.length < 10) {
-                            btn.style.display = "none";
+                            btn_1.style.display = "none";
                         }
                         //если статей больше 10, скрываем остальные
                         for (i = 10; i < article_1.length; i++) {
                             article_1[i].style.display = "none";
                         }
                         countD_1 = 10;
-                        if (btn) {
-                            btn.addEventListener("click", function () {
+                        if (btn_1) {
+                            btn_1.addEventListener("click", function () {
                                 //добавляем еще 10
                                 countD_1 += 10;
                                 if (countD_1 <= article_1.length) {
                                     for (var i = 0; i < countD_1; i++) {
                                         article_1[i].style.display = "block";
+                                        btn_1.style.display = "none";
+                                    }
+                                }
+                                else { //если статьи еще есть, но их меньше 10
+                                    for (var i = 10; i < article_1.length; i++) {
+                                        article_1[i].style.display = "block";
+                                        btn_1.style.display = "none";
                                     }
                                 }
                             });
@@ -151,10 +156,7 @@ function displayNewsInDOM(query) {
         }
     }
 });
-//можно сделать боковую панель и добавить туда все новостные сайты(свернуть большую часть и добавить поиск), при клике на новостной сайт показать популярные новости данного сайта через апи-ссылку, добавляя соурс:новостной-сайт
-//правую боковую панель (горячие новости) можно сделать через ссылку: популярное+все, добавить картинки, сделать новости маленькими
-//попытка2 сделать панель с категориями
-// выкачивает статьи по категории
+//панель с категориями
 function fetchCategories(categoryV) {
     return __awaiter(this, void 0, void 0, function () {
         var response, error_2;
@@ -164,8 +166,8 @@ function fetchCategories(categoryV) {
                     _a.trys.push([0, 2, , 3]);
                     return [4 /*yield*/, axios_1.default.get("".concat(BASE_URL, "/top-headlines"), {
                             params: {
-                                category: categoryV, // строчка которую ищем
-                                apiKey: API_Key, // наш ключ апи
+                                category: categoryV,
+                                apiKey: API_Key,
                             },
                         })];
                 case 1:
@@ -181,80 +183,72 @@ function fetchCategories(categoryV) {
     });
 }
 // показываем новости по категории
-//  async function displayNewsByCategories(category: string): Promise<void> {
-//   // взяли все источники категории
-//   const newsData = await fetchCategories(category);
-//   // выводим массив источников в консоль
-//   // console.log(newsData?.sources);
-//   const newsContainer = document.getElementById("news-container");
-//   // console.log(newsData?.articles.length);
-//   // if (newsData?.articles.length == 0 && newsContainer) {
-//   //   const noNewsFound = document.createElement("div");
-//   //   noNewsFound.className = "emptiness";
-//   //   noNewsFound.innerHTML = `
-//   //         <p>По запросу ${query} ничего не найдено</p>`;
-//   //   newsContainer.appendChild(noNewsFound);
-//   // }
-//   if (newsData && newsContainer) {
-//     // тип переменной articles мы уже прописали в types.ts
-//     //добавили все статьи на страницу, кроме удаленных
-//     newsData.articles.forEach((article) => {
-//       if (article.title != "[Removed]") {
-//         const articleDiv = document.createElement("div");
-//         articleDiv.className = "article";
-//         articleDiv.innerHTML = `
-//               <h2>${article.title}</h2>
-//               <p>${article.publishedAt.slice(
-//                 0,
-//                 -10
-//               )} ${article.publishedAt.slice(11, -4)}</p>
-//               <p>${article.description || ""} <a href="${
-//           article.url
-//         }" target="_blank">Читать еще</a></p>
-//               `;
-//         newsContainer.appendChild(articleDiv);
-//       }
-//     });
-//     //добавляем кнопку
-//     const articleBtn = document.createElement("button");
-//     articleBtn.id = "button";
-//     articleBtn.innerText = "Показать еще";
-//     newsContainer.appendChild(articleBtn);
-//     const article: HTMLCollectionOf<Element> =
-//       document.getElementsByClassName("article");
-//     const btn: HTMLElement | null = document.getElementById("button");
-//     //скрыть кнопку если новостей меньше 10
-//     if (article.length < 10) {
-//       (btn as HTMLElement).style.display = "none";
-//     }
-//     //если статей больше 10, скрываем остальные
-//     for (let i: number = 10; i < article.length; i++) {
-//       (article[i] as HTMLElement).style.display = "none";
-//     }
-//     //если нажали на кнопку показать еще
-//     let countD: number = 10;
-//     if (btn) {
-//       btn.addEventListener("click", function (): void {
-//         //добавляем еще 10
-//         countD += 10;
-//         if (countD <= article.length) {
-//           for (let i: number = 0; i < countD; i++) {
-//             (article[i] as HTMLElement).style.display = "block";
-//           }
-//         }
-//       });
-//     }
-//   }
-// }
+function displayNewsByCategories(category) {
+    return __awaiter(this, void 0, void 0, function () {
+        var newsData, newsContainer, articleBtn, article_2, btn_2, i, countD_2;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, fetchCategories(category)];
+                case 1:
+                    newsData = _a.sent();
+                    newsContainer = document.getElementById("news-container");
+                    if (newsData && newsContainer) {
+                        newsData.articles.forEach(function (article) {
+                            if (article.title != "[Removed]") {
+                                var articleDiv = document.createElement("div");
+                                articleDiv.className = "article";
+                                articleDiv.innerHTML = "\n              <h2>".concat(article.title, "</h2>\n              <p>").concat(article.publishedAt.slice(0, -10), " ").concat(article.publishedAt.slice(11, -4), "</p>\n              <p>").concat(article.description || "", " <a href=\"").concat(article.url, "\" target=\"_blank\">\u0427\u0438\u0442\u0430\u0442\u044C \u0435\u0449\u0435</a></p>\n              ");
+                                newsContainer.appendChild(articleDiv);
+                            }
+                        });
+                        articleBtn = document.createElement("button");
+                        articleBtn.id = "button";
+                        articleBtn.innerText = "Показать еще";
+                        newsContainer.appendChild(articleBtn);
+                        article_2 = document.getElementsByClassName("article");
+                        btn_2 = document.getElementById("button");
+                        console.log(article_2.length);
+                        //скрыть кнопку если новостей меньше 10
+                        if (article_2.length < 10) {
+                            btn_2.style.display = "none";
+                        }
+                        //если статей больше 10, скрываем остальные
+                        for (i = 10; i < article_2.length; i++) {
+                            article_2[i].style.display = "none";
+                        }
+                        countD_2 = 10;
+                        if (btn_2) {
+                            btn_2.addEventListener("click", function () {
+                                //добавляем еще 10
+                                countD_2 += 10;
+                                if (countD_2 <= article_2.length) {
+                                    for (var i = 0; i < countD_2; i++) {
+                                        article_2[i].style.display = "block";
+                                        btn_2.style.display = "none";
+                                    }
+                                }
+                                else { //если статьи еще есть, но их меньше 10
+                                    for (var i = 10; i < article_2.length; i++) {
+                                        article_2[i].style.display = "block";
+                                        btn_2.style.display = "none";
+                                    }
+                                }
+                            });
+                        }
+                    }
+                    return [2 /*return*/];
+            }
+        });
+    });
+}
 //событие клика по категории (по тегу li)
 (_c = document.querySelector("ul")) === null || _c === void 0 ? void 0 : _c.addEventListener("click", function (ev) {
     var li = ev.target.closest("li");
     if (li) {
         //взяли значение
         var categoryValue = li.getAttribute("value") || "";
-        // console.log(categoryValue)
         //вызываем функцию показа новостей по категориям
         document.getElementById("news-container").innerHTML = "";
-        displayNewsInDOM(categoryValue);
+        displayNewsByCategories(categoryValue);
     }
 });

@@ -3,7 +3,6 @@ export interface Root {
     status: string;
     totalResults: number;
     articles: Article[];
-    sources: Source[];
   }
   
 // основной интерфейс
@@ -20,14 +19,4 @@ export interface Root {
     urlToImage: string | null
     publishedAt: string
     content: string | null
-  }
-  
-  export interface Source {
-    id: string;
-    name: string;
-    description: string;
-    url: string;
-    category: string;
-    language: string;
-    country: string;
   }

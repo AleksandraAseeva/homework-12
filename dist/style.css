@@ -7,28 +7,23 @@ body {
 
 .main-container {
   display: grid;
-  grid-template-columns: 200px auto 200px;
-  /* justify-items: stretch; */
+  grid-template-columns: 250px auto 200px;
 }
 
-.leftbar, .rightbar {
-max-width: 200px;
+.leftbar {
+  max-width: 200px;
 }
 
 h3 {
-  /* background-color: rgb(222, 176, 176); */
-  /* margin: 0 10px; */
-  padding-left: 20px;
+  padding-left: 2.4rem;
   margin-bottom: 15px;
-  /* text-align: center; */
   font-size: 1.4rem;
 }
 
 ul {
-  /* background-color: rgb(222, 176, 176); */
   margin: 0 10px;
   list-style-position: inside;
-  padding-left: 20px;
+  padding-left: 2.4rem;
 }
 
 li {
@@ -48,7 +43,6 @@ li::marker {
 
 .main {
   padding: 1rem;
-  /* max-width: 900px; */
   width: 100%;
   margin: auto;
   border: 1px solid ;
@@ -83,7 +77,6 @@ span {
 
 p {
   font-size: 1.2rem;
-  /* font-family: "Montserrat Alternates", sans-serif; */
   font-weight: 400;
   margin: 0;
 }
@@ -109,44 +102,37 @@ form {
     background-color: rgb(238, 140, 11);
 }
 
-h2 {
-    /* font-family: "Montserrat Alternates", sans-serif; */
-}
-
 #news-container {
   display: flex;
   flex-direction: column;
-  /* justify-content: center; */
   align-items: center;
 }
 
 .article {
-  margin-top: 20px;
-  /* padding-top: 10px; */
-  background-color: rgb(229, 229, 229);
+  margin-top: 25px;
   width: 100%;
+  border-radius: 5px;
 }
 
 a {
   text-decoration: none;
+  color: rgb(238, 140, 11);
 }
 
 .emptiness {
   display: flex;
   justify-content: center;
   margin-top: 40px;
-  background-color: rgb(207, 207, 207);
+  color: rgb(180, 180, 180);
   padding: 10px;
 }
 
 #button {
-  /* background-color: rgb(238, 140, 11); */
   background: white;
   border: none;
   color: rgb(238, 140, 11);
-  font-size: 18px;
+  font-size: 20px;
   margin-top: 10px;
-  /* width: 100px; */
   font-family: "Montserrat Alternates", sans-serif;
   font-weight: 500;
 }
